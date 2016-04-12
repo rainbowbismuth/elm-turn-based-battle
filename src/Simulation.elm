@@ -245,7 +245,7 @@ selfReaction : Combatant -> Move -> ( Combatant, List String )
 selfReaction user mv =
   case mv of
     Defend ->
-      ( Combatant.toDefendState user, [ user.name ++ " has started defending" ] )
+      ( Combatant.increaseAP (Combatant.toDefendState user), [ user.name ++ " has started defending" ] )
 
     _ ->
       Debug.crash "not a self targetting move"
