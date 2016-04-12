@@ -48,7 +48,7 @@ scoreCombatant cmbt =
 
 score : Simulation -> Float
 score sim =
-  Array.foldr (scoreCombatant >> (+)) 0 (Simulation.combatants sim)
+  Array.foldr (\x y -> scoreCombatant x + y) 0 (Simulation.combatants sim)
 
 
 targetsForMove : Simulation -> Move -> List Command
