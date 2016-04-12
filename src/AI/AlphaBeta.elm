@@ -163,7 +163,7 @@ playAI sim =
               Debug.crash "this shouldn't be happening"
 
         score =
-          evaluatePosition nextSim 4
+          evaluatePosition nextSim 3
       in
         ( cmd, nextSim, score )
 
