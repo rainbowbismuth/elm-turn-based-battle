@@ -80,15 +80,18 @@ update action model =
 
 aiIfNecessary : Simulation -> Simulation
 aiIfNecessary sim =
-  case Simulation.whosTurn (Simulation.clockTickUntilTurn sim) of
-    Just AI ->
-      aiIfNecessary (AlphaBeta.playAI sim)
+  if Simulation.gameOver sim then
+    sim
+  else
+    case Simulation.whosTurn (Simulation.clockTickUntilTurn sim) of
+      Just AI ->
+        aiIfNecessary (AlphaBeta.playAI sim)
 
-    Just User ->
-      sim
+      Just User ->
+        sim
 
-    Nothing ->
-      Debug.crash "this should not be possible"
+      Nothing ->
+        Debug.crash "this should not be possible"
 
 
 view : Address Action -> Model -> Html
