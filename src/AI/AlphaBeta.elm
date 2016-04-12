@@ -24,7 +24,7 @@ import Combatant exposing (Combatant)
 import Player exposing (Player(..))
 import Command exposing (Command(..), CommandType(..))
 import Move exposing (Move)
-import Array
+import Array exposing (Array)
 import Debug
 
 
@@ -51,13 +51,34 @@ score sim =
   Array.foldr (\x y -> scoreCombatant x + y) 0 (Simulation.combatants sim)
 
 
-targetsForMove : Simulation -> Move -> List Command
+arrayFilterMap : (a -> Maybe b) -> Array a -> Array b
+arrayFilterMap f arr =
+  let
+    reducer a acc =
+      case f a of
+        Just b ->
+          Array.push b acc
+        Nothing ->
+          acc
+  in
+    Array.foldr reducer Array.empty arr
+
+
+listToArrayConcatMap : (a -> Array b) -> List a -> Array b
+listToArrayConcatMap f arr =
+  let
+    reducer a acc =
+      Array.append acc (f a)
+  in
+    List.foldr reducer Array.empty arr
+
+
+targetsForMove : Simulation -> Move -> Array Command
 targetsForMove sim mv =
   case Command.typeOfMove mv of
     SingleTargetType ->
       sim.combatants
-        |> Array.toList
-        |> List.filterMap
+        |> arrayFilterMap
             (\target ->
               if Combatant.alive target then
                 Just (SingleTarget mv target.id)
@@ -66,13 +87,14 @@ targetsForMove sim mv =
             )
 
     SelfTargetType ->
-      [ SelfTarget mv ]
+      Array.push (SelfTarget mv) Array.empty
 
 
 availableMoves : Simulation -> List Command
 availableMoves sim =
   Combatant.moveList (Simulation.activeCmbtMustExist sim)
-    |> List.concatMap (targetsForMove sim)
+    |> listToArrayConcatMap (targetsForMove sim)
+    |> Array.toList
 
 
 inf : Float
