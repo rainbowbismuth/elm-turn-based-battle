@@ -1,0 +1,240 @@
+{-
+elm-turn-based-battle, a small browser game.
+Copyright (C) 2016  Emily A. Bellows
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-}
+
+
+module UserInterface (..) where
+
+import Id exposing (Id)
+import Move exposing (Move)
+import Simulation exposing (Simulation)
+import Player exposing (Player(..))
+import Combatant exposing (Combatant)
+import Command exposing (Command(..), CommandType(..))
+import AI.AlphaBeta as AlphaBeta
+import Html exposing (Html, div, button, text, span)
+import Html.Attributes exposing (class, style)
+import Html.Events exposing (onClick)
+import Signal exposing (Address)
+import List
+import Array
+import Debug
+import Maybe
+
+
+type alias Model =
+  { sim : Simulation
+  , mov : Maybe Move
+  }
+
+
+type Action
+  = SelectMove Move
+  | SelectTarget Id
+
+
+update : Action -> Model -> Model
+update action model =
+  case action of
+    SelectMove mv ->
+      case Command.typeOfMove mv of
+        SingleTargetType ->
+          { model | mov = Just mv }
+
+        SelfTargetType ->
+          case Simulation.simulate (SelfTarget mv) model.sim of
+            Just sim ->
+              { model | sim = Simulation.clockTickUntilTurn (aiIfNecessary sim), mov = Nothing }
+
+            Nothing ->
+              Debug.crash "this should not be possible"
+
+    SelectTarget id ->
+      case model.mov of
+        Just mov ->
+          case Simulation.simulate (SingleTarget mov id) model.sim of
+            Just sim ->
+              { model | sim = Simulation.clockTickUntilTurn (aiIfNecessary sim), mov = Nothing }
+
+            Nothing ->
+              Debug.crash "this should not be possible"
+
+        Nothing ->
+          Debug.crash "this should not be possible"
+
+
+aiIfNecessary : Simulation -> Simulation
+aiIfNecessary sim =
+  case Simulation.whosTurn (Simulation.clockTickUntilTurn sim) of
+    Just AI ->
+      aiIfNecessary (AlphaBeta.playAI sim)
+
+    Just User ->
+      sim
+
+    Nothing ->
+      Debug.crash "this should not be possible"
+
+
+view : Address Action -> Model -> Html
+view addr model =
+  div
+    [ class "game" ]
+    [ div
+        [ class "main" ]
+        [ (div [ class "ai-party" ] [ viewParty addr AI model ])
+        , (div [ class "user-party" ] [ viewParty addr User model ])
+        , (viewCombatLog model.sim.combatLog)
+        ]
+    , viewCtBar model
+    ]
+
+
+viewCombatLog log =
+  div
+    [ class "combat-log" ]
+    (log |> List.take 10 |> List.indexedMap viewCombatLogLine)
+
+
+viewCombatLogLine idx line =
+  let
+    op =
+      toString (1.0 - (toFloat idx * 8.0e-2))
+  in
+    div
+      [ class "combat-log-line"
+      , style [ ( "opacity", op ) ]
+      ]
+      [ text line ]
+
+
+viewCtBar model =
+  let
+    order =
+      Simulation.turnOrderList model.sim
+  in
+    div
+      [ class "ct-bar" ]
+      ((text "Turn Order") :: (order |> List.map viewCtBarUnit))
+
+
+viewCtBarUnit cmbt =
+  div
+    [ class "ct-bar-unit" ]
+    [ text cmbt.name ]
+
+
+viewParty : Address Action -> Player -> Model -> Html
+viewParty addr player model =
+  div
+    [ class "party" ]
+    (Simulation.party player model.sim
+      |> Array.map (viewCombatant addr player model)
+      |> Array.toList
+    )
+
+
+viewCombatant : Address Action -> Player -> Model -> Combatant -> Html
+viewCombatant addr player model cmbt =
+  div
+    [ if Combatant.alive cmbt then
+        class "combatant combatant-alive"
+      else
+        class "combatant combatant-dead"
+    ]
+    [ div
+        [ class "combatant-status-bar" ]
+        [ (span [ class "combatant-name" ] [ text cmbt.name ])
+        , (span [ class "combatant-class" ] [ text (toString cmbt.class) ])
+        , (div
+            [ class "combatant-hp" ]
+            [ span [ class "combatant-hp-label" ] [ text "HP" ]
+            , text (toString (ceiling cmbt.hitPoints))
+            ]
+          )
+        , (div
+            [ class "combatant-ct" ]
+            [ span [ class "combatant-ct-label" ] [ text "CT" ]
+            , text (toString cmbt.chargeTime)
+            ]
+          )
+        ]
+    , if Combatant.alive cmbt then
+        case ( Simulation.doIHaveActiveTurn cmbt.id model.sim, player, model.mov ) of
+          ( True, User, Just mv ) ->
+            viewTargets addr player model
+
+          ( True, User, Nothing ) ->
+            viewMoves addr cmbt
+
+          _ ->
+            text ""
+      else
+        text ""
+    ]
+
+
+viewMoves : Address Action -> Combatant -> Html
+viewMoves addr cmbt =
+  div
+    [ class "combatant-move-list" ]
+    (Combatant.moveList cmbt |> List.map (viewMove addr cmbt))
+
+
+viewMove : Address Action -> Combatant -> Move -> Html
+viewMove addr unit mv =
+  button
+    [ class "combatant-mov"
+    , onClick addr (SelectMove mv)
+    ]
+    [ text (toString mv) ]
+
+
+viewTargets : Address Action -> Player -> Model -> Html
+viewTargets addr player model =
+  div
+    [ class "combatant-target-list" ]
+    [ div
+        [ class "combatant-target-party" ]
+        (Simulation.combatants model.sim
+          |> Array.filter (Combatant.foesOf player)
+          |> Array.map (viewTarget addr)
+          |> Array.toList
+        )
+    , div
+        [ class "combatant-target-party" ]
+        (Simulation.combatants model.sim
+          |> Array.filter (Combatant.friendsOf player)
+          |> Array.map (viewTarget addr)
+          |> Array.toList
+        )
+    ]
+
+
+viewTarget addr cmbt =
+  let
+    attributes =
+      if Combatant.alive cmbt then
+        [ class "combatant-target combatant-target-alive"
+        , onClick addr (SelectTarget cmbt.id)
+        ]
+      else
+        [ class "combatant-target combatant-target-dead" ]
+  in
+    button
+      attributes
+      [ text cmbt.name ]

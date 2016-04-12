@@ -1,0 +1,122 @@
+.combatant {
+    width: 50%;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+    margin: 1px;
+}
+.combatant-alive {}
+.combatant-dead {
+    background-color: #909090;
+    opacity: 0.25;
+}
+.combatant-status-bar {
+    display: flex;
+    flex-wrap: nowrap;
+}
+.combatant-name {
+    flex-grow: 1;
+}
+.combatant-class {
+    color: #AAAAAA;
+    flex-grow: 3;
+    text-align: right;
+    padding-right: 0.5em;
+}
+.combatant-hp {
+    flex-grow: 1;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+}
+.combatant-ct {
+    flex-grow: 1;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+}
+.combatant-hp-label {
+    font-size: 8;
+    color: gray;
+    padding-right: 0.3em;
+}
+.combatant-ct-label {
+    font-size: 8;
+    color: gray;
+    padding-right: 0.3em;
+}
+.combatant-move-list {
+    flex-direction: column;
+    display: flex;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+}
+.combatant-move {
+    flex-grow: 1;
+}
+.combatant-target-list {
+    flex-direction: column;
+    display: flex;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+}
+.combatant-target-party {
+    flex-direction: row;
+    flex-wrap: wrap;
+    display: flex;
+    flex-grow: 1;
+}
+.combatant-target {
+    flex-grow: 1;
+    min-width: 33%;
+    width: 33%;
+    max-width: 35%;
+}
+.combatant-target-dead {
+    opacity: 0.25;
+}
+.party {
+    min-height: 6em;
+    display: flex;
+    flex-direction: row;
+}
+.user-party {}
+.ai-party {}
+.combat-log-line {
+    text-align: center;
+}
+.combat-log {
+    display: flex;
+    flex-direction: column;
+    min-height: 8em;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+    margin: 1px;
+}
+.main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 4;
+}
+.ct-bar-unit {
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+    margin: 1px;
+}
+.ct-bar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    padding: 1px;
+    margin: 1px;
+}
+.game {
+    display: flex;
+    flex-direction: row;
+}
