@@ -59,6 +59,7 @@ initialModel =
   , sim =
       Simulation.clockTickUntilTurn
         { combatLog = []
+        , activeCombatant = Nothing
         , combatants = Array.fromList initialCombatants
         }
   }

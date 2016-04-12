@@ -133,7 +133,7 @@ clockTick cmbt =
 
 
 increaseAP cmbt =
-  { cmbt | actionPoints = max (cmbt.actionPoints + 1) 5 }
+  { cmbt | actionPoints = min (cmbt.actionPoints + 1) 5 }
 
 
 payTurnCT cmbt =

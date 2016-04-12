@@ -31,6 +31,7 @@ import Debug
 
 type alias Simulation =
   { combatants : Array Combatant
+  , activeCombatant : Maybe Int
   , combatLog : List String
   }
 
@@ -67,8 +68,8 @@ enemies player sim =
   Array.filter (\cmbt -> cmbt.player /= player) sim.combatants
 
 
-activeCmbt : Simulation -> Maybe Combatant
-activeCmbt sim =
+findActiveCmbt : Simulation -> Maybe Combatant
+findActiveCmbt sim =
   let
     recur i =
       case Array.get i sim.combatants of
@@ -82,6 +83,16 @@ activeCmbt sim =
           Nothing
   in
     recur 0
+
+
+activeCmbt : Simulation -> Maybe Combatant
+activeCmbt sim =
+  case sim.activeCombatant of
+    Just id ->
+      Just (combatantByIdMustExist id sim)
+
+    Nothing ->
+      Nothing
 
 
 activeCmbtMustExist : Simulation -> Combatant
@@ -107,32 +118,40 @@ doIHaveActiveTurn id sim =
 dropActiveTurn : Simulation -> Simulation
 dropActiveTurn sim =
   let
-    recur i =
-      case Array.get i sim.combatants of
-        Just cmbt ->
-          if Combatant.canHaveActiveTurn cmbt then
-            let
-              nextCmbt =
-                Combatant.payTurnCT cmbt
-            in
-              { sim | combatants = Array.set i nextCmbt sim.combatants }
-          else
-            recur (i + 1)
+    cmbt =
+      activeCmbtMustExist sim
 
-        Nothing ->
-          sim
+    nextCmbt =
+      Combatant.payTurnCT cmbt
   in
-    recur 0
+    clockTickUntilTurn
+      { sim | combatants = Array.set cmbt.id nextCmbt sim.combatants, activeCombatant = Nothing }
 
 
 clockTickUntilTurn : Simulation -> Simulation
-clockTickUntilTurn sim =
-  case activeCmbt sim of
-    Just _ ->
-      sim
+clockTickUntilTurn initialSim =
+  let
+    recur sim =
+      case findActiveCmbt sim of
+        Just cmbt ->
+          let
+            nextCmbt =
+              Combatant.increaseAP cmbt
 
-    Nothing ->
-      clockTickUntilTurn (clockTick sim)
+            nextCombatants =
+              Array.set nextCmbt.id nextCmbt sim.combatants
+          in
+            { sim | activeCombatant = Just cmbt.id, combatants = nextCombatants }
+
+        Nothing ->
+          recur (clockTick sim)
+  in
+    case initialSim.activeCombatant of
+      Just _ ->
+        initialSim
+
+      Nothing ->
+        recur initialSim
 
 
 whosTurn : Simulation -> Maybe Player
