@@ -157,7 +157,7 @@ playAI sim =
         nextSim =
           case Simulation.simulate cmd sim of
             Just sim ->
-              sim
+              Simulation.clockTickUntilTurn sim
 
             Nothing ->
               Debug.crash "this shouldn't be happening"
