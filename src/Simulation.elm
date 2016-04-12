@@ -130,28 +130,31 @@ dropActiveTurn sim =
 
 clockTickUntilTurn : Simulation -> Simulation
 clockTickUntilTurn initialSim =
-  let
-    recur sim =
-      case findActiveCmbt sim of
-        Just cmbt ->
-          let
-            nextCmbt =
-              Combatant.increaseAP cmbt
+  if gameOver initialSim then
+    initialSim
+  else
+    let
+      recur sim =
+        case findActiveCmbt sim of
+          Just cmbt ->
+            let
+              nextCmbt =
+                Combatant.increaseAP cmbt
 
-            nextCombatants =
-              Array.set nextCmbt.id nextCmbt sim.combatants
-          in
-            { sim | activeCombatant = Just cmbt.id, combatants = nextCombatants }
+              nextCombatants =
+                Array.set nextCmbt.id nextCmbt sim.combatants
+            in
+              { sim | activeCombatant = Just cmbt.id, combatants = nextCombatants }
+
+          Nothing ->
+            recur (clockTick sim)
+    in
+      case initialSim.activeCombatant of
+        Just _ ->
+          initialSim
 
         Nothing ->
-          recur (clockTick sim)
-  in
-    case initialSim.activeCombatant of
-      Just _ ->
-        initialSim
-
-      Nothing ->
-        recur initialSim
+          recur initialSim
 
 
 whosTurn : Simulation -> Maybe Player
