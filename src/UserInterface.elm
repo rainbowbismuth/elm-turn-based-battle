@@ -219,7 +219,7 @@ viewMoves addr cmbt =
 viewMove : Address Action -> Combatant -> Move -> Html
 viewMove addr unit mv =
   button
-    [ class "combatant-mov"
+    [ class "combatant-move"
     , onClick addr (SelectMove mv)
     ]
     [ text (toString mv) ]
