@@ -153,23 +153,20 @@ playAI : Simulation -> Simulation
 playAI sim =
   let
     explore cmd =
-      let
-        nextSim =
-          case Simulation.simulate cmd sim of
-            Just sim ->
-              Simulation.clockTickUntilTurn sim
+      case Simulation.simulate cmd sim of
+        Just nextSim ->
+          let
+            nextNextSim =
+              Simulation.clockTickUntilTurn nextSim
+          in
+            Just ( cmd, nextNextSim, evaluatePosition nextNextSim 3 )
 
-            Nothing ->
-              Debug.crash "this shouldn't be happening"
-
-        score =
-          evaluatePosition nextSim 3
-      in
-        ( cmd, nextSim, score )
+        Nothing ->
+          Nothing
 
     head =
       availableMoves sim
-        |> List.map explore
+        |> List.filterMap explore
         |> List.sortBy (\( c, s, f ) -> -f)
         |> Debug.log "AI move list"
         |> List.head

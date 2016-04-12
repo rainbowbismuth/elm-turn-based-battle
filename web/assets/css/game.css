@@ -82,6 +82,9 @@
 .combatant-move {
     flex-grow: 1;
 }
+.combatant-move-unusable {
+    opacity: 0.5;
+}
 .combatant-target-list {
     flex-direction: column;
     display: flex;
