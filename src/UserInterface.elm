@@ -136,14 +136,16 @@ viewCtBar model =
   in
     div
       [ class "ct-bar" ]
-      ((text "Turn Order") :: (order |> List.map viewCtBarUnit))
+      ((text "Turn Order") :: (order |> List.indexedMap viewCtBarUnit))
 
 
-viewCtBarUnit : Combatant -> Html
-viewCtBarUnit cmbt =
+viewCtBarUnit : Int -> Combatant -> Html
+viewCtBarUnit n cmbt =
   div
     [ class "ct-bar-unit" ]
-    [ text cmbt.name ]
+    [ span [ class "ct-bar-unit-num" ] [ text (toString (n + 1)) ]
+    , text cmbt.name
+    ]
 
 
 viewParty : Address Action -> Player -> Model -> Html
