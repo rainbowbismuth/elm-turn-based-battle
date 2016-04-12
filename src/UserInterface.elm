@@ -34,6 +34,7 @@ import List
 import Array
 import Debug
 import Maybe
+import String
 
 
 type alias Model =
@@ -104,12 +105,14 @@ view addr model =
     ]
 
 
+viewCombatLog : List String -> Html
 viewCombatLog log =
   div
     [ class "combat-log" ]
     (log |> List.take 10 |> List.indexedMap viewCombatLogLine)
 
 
+viewCombatLogLine : Int -> String -> Html
 viewCombatLogLine idx line =
   let
     op =
@@ -122,6 +125,7 @@ viewCombatLogLine idx line =
       [ text line ]
 
 
+viewCtBar : Model -> Html
 viewCtBar model =
   let
     order =
@@ -132,6 +136,7 @@ viewCtBar model =
       ((text "Turn Order") :: (order |> List.map viewCtBarUnit))
 
 
+viewCtBarUnit : Combatant -> Html
 viewCtBarUnit cmbt =
   div
     [ class "ct-bar-unit" ]
@@ -166,6 +171,7 @@ viewCombatant addr player model cmbt =
             , text (toString (ceiling cmbt.hitPoints))
             ]
           )
+        , viewCombatantAP cmbt
         , (div
             [ class "combatant-ct" ]
             [ span [ class "combatant-ct-label" ] [ text "CT" ]
@@ -185,6 +191,16 @@ viewCombatant addr player model cmbt =
             text ""
       else
         text ""
+    ]
+
+
+viewCombatantAP : Combatant -> Html
+viewCombatantAP cmbt =
+  div
+    [ class "combatant-ap" ]
+    [ span [ class "combatant-ap-label" ] [ text "AP" ]
+    , span [ class "combatant-ap-filled" ] [ text (String.repeat cmbt.actionPoints "•") ]
+    , span [ class "combatant-ap-empty" ] [ text (String.repeat (5 - cmbt.actionPoints) "•") ]
     ]
 
 

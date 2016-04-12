@@ -37,6 +37,7 @@ type alias Combatant =
   , name : String
   , class : Class
   , hitPoints : Float
+  , actionPoints : Int
   , chargeTime : Int
   , state : State
   }
@@ -51,6 +52,7 @@ mkCombatant cls =
       , name = "missingname"
       , class = Warrior
       , hitPoints = 0.0
+      , actionPoints = 0
       , chargeTime = 0
       , state = Default
       }
@@ -128,6 +130,10 @@ clockTick cmbt =
     { cmbt | chargeTime = cmbt.chargeTime + speed cmbt }
   else
     cmbt
+
+
+increaseAP cmbt =
+  { cmbt | actionPoints = max (cmbt.actionPoints + 1) 5 }
 
 
 payTurnCT cmbt =
