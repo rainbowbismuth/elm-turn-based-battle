@@ -38,9 +38,6 @@
     box-shadow: $f;
 }
 .tooltip-container {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
     position: relative;
 }
 $tooltip-color: #1496bb;

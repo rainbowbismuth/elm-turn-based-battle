@@ -158,13 +158,6 @@ viewParty addr player model =
     )
 
 
-tooltipContainer : List Html -> Html
-tooltipContainer htmls =
-  div
-    [ class "tooltip-container" ]
-    htmls
-
-
 tooltip : String -> Html
 tooltip tip =
   div
@@ -182,39 +175,37 @@ viewCombatant addr player model cmbt =
     ]
     [ div
         [ class "combatant-status-bar" ]
-        [ tooltipContainer
-            [ span
-                [ class "combatant-name" ]
-                [ text cmbt.name ]
+        [ (span
+            [ class "combatant-name tooltip-container" ]
+            [ text cmbt.name
             , tooltip "The unit's name"
             ]
-        , tooltipContainer
-            [ span
-                [ class "combatant-class" ]
-                [ text (toString cmbt.class) ]
+          )
+        , (span
+            [ class "combatant-class tooltip-container" ]
+            [ text (toString cmbt.class)
             , tooltip "The unit's class"
             ]
-        , tooltipContainer
-            [ div
-                [ class "combatant-hp" ]
-                [ span
-                    [ class "combatant-hp-label" ]
-                    [ text "HP" ]
-                , text (toString (ceiling cmbt.hitPoints))
-                ]
+          )
+        , (div
+            [ class "combatant-hp tooltip-container" ]
+            [ span
+                [ class "combatant-hp-label" ]
+                [ text "HP" ]
+            , text (toString (ceiling cmbt.hitPoints))
             , tooltip "Health"
             ]
+          )
         , viewCombatantAP cmbt
-        , tooltipContainer
-            [ div
-                [ class "combatant-ct" ]
-                [ span
-                    [ class "combatant-ct-label" ]
-                    [ text "CT" ]
-                , text (toString cmbt.chargeTime)
-                ]
+        , (div
+            [ class "combatant-ct tooltip-container" ]
+            [ span
+                [ class "combatant-ct-label" ]
+                [ text "CT" ]
+            , text (toString cmbt.chargeTime)
             , tooltip "Charge time, unit takes a turn when at least 100"
             ]
+          )
         ]
     , if Combatant.alive cmbt then
         case ( Simulation.doIHaveActiveTurn cmbt.id model.sim, player, model.mov ) of
@@ -250,17 +241,15 @@ viewMoves addr cmbt =
 
 viewMove : Address Action -> Combatant -> Move -> Html
 viewMove addr unit mv =
-  tooltipContainer
-    [ (button
-        (if unit.actionPoints >= Move.cost mv then
-          [ class "combatant-move"
-          , onClick addr (SelectMove mv)
-          ]
-         else
-          [ class "combatant-move tooltip-container combatant-move-unusable" ]
-        )
-        [ text (toString mv ++ " " ++ String.repeat (Move.cost mv) "•") ]
-      )
+  button
+    (if unit.actionPoints >= Move.cost mv then
+      [ class "combatant-move tooltip-container"
+      , onClick addr (SelectMove mv)
+      ]
+     else
+      [ class "combatant-move tooltip-container combatant-move-unusable" ]
+    )
+    [ text (toString mv ++ " " ++ String.repeat (Move.cost mv) "•")
     , tooltip (Move.tooltip mv)
     ]
 
