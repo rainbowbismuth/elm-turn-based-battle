@@ -225,10 +225,11 @@ viewCombatant addr player model cmbt =
 viewCombatantAP : Combatant -> Html
 viewCombatantAP cmbt =
   div
-    [ class "combatant-ap" ]
+    [ class "combatant-ap tooltip-container" ]
     [ span [ class "combatant-ap-label" ] [ text "AP" ]
     , span [ class "combatant-ap-filled" ] [ text (String.repeat cmbt.actionPoints "•") ]
     , span [ class "combatant-ap-empty" ] [ text (String.repeat (5 - cmbt.actionPoints) "•") ]
+    , tooltip ("This unit has " ++ toString cmbt.actionPoints ++ " AP to spend on moves")
     ]
 
 
