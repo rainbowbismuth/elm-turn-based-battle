@@ -24,3 +24,16 @@ type Move
   = Attack
   | Heal
   | Defend
+
+
+cost : Move -> Int
+cost mv =
+  case mv of
+    Attack ->
+      1
+
+    Heal ->
+      2
+
+    Defend ->
+      0

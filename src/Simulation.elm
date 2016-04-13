@@ -130,28 +130,31 @@ dropActiveTurn sim =
 
 clockTickUntilTurn : Simulation -> Simulation
 clockTickUntilTurn initialSim =
-  let
-    recur sim =
-      case findActiveCmbt sim of
-        Just cmbt ->
-          let
-            nextCmbt =
-              Combatant.increaseAP cmbt
+  if gameOver initialSim then
+    initialSim
+  else
+    let
+      recur sim =
+        case findActiveCmbt sim of
+          Just cmbt ->
+            let
+              nextCmbt =
+                Combatant.increaseAP cmbt
 
-            nextCombatants =
-              Array.set nextCmbt.id nextCmbt sim.combatants
-          in
-            { sim | activeCombatant = Just cmbt.id, combatants = nextCombatants }
+              nextCombatants =
+                Array.set nextCmbt.id nextCmbt sim.combatants
+            in
+              { sim | activeCombatant = Just cmbt.id, combatants = nextCombatants }
+
+          Nothing ->
+            recur (clockTick sim)
+    in
+      case initialSim.activeCombatant of
+        Just _ ->
+          initialSim
 
         Nothing ->
-          recur (clockTick sim)
-  in
-    case initialSim.activeCombatant of
-      Just _ ->
-        initialSim
-
-      Nothing ->
-        recur initialSim
+          recur initialSim
 
 
 whosTurn : Simulation -> Maybe Player
@@ -233,9 +236,9 @@ targetReaction user mv target =
     Heal ->
       let
         msg =
-          user.name ++ " heals " ++ target.name ++ " for 30 hitpoints."
+          user.name ++ " heals " ++ target.name ++ " for 45 hitpoints."
       in
-        ( { target | hitPoints = target.hitPoints + 30 }, [ msg ] )
+        ( { target | hitPoints = target.hitPoints + 45 }, [ msg ] )
 
     _ ->
       Debug.crash "not a single target move"
@@ -254,28 +257,42 @@ selfReaction user mv =
 simulate : Command -> Simulation -> Maybe Simulation
 simulate cmd initialSim =
   let
+    tryPay sim mv cmbt =
+      case Combatant.payAP (Move.cost mv) cmbt of
+        Just nextCmbt ->
+          Just ( nextCmbt, { sim | combatants = Array.set nextCmbt.id nextCmbt sim.combatants } )
+
+        Nothing ->
+          Nothing
+
     with sim cmbt =
       case cmd of
         SingleTarget mv tid ->
-          if Combatant.moveAvailable mv cmbt && existsAndAlive tid sim then
-            let
-              target =
-                combatantByIdMustExist tid sim
+          case tryPay sim mv cmbt of
+            Just ( nextCmbt, nextSim ) ->
+              if Combatant.moveAvailable mv nextCmbt && existsAndAlive tid nextSim then
+                let
+                  target =
+                    combatantByIdMustExist tid nextSim
 
-              ( newTarget, logStuff ) =
-                targetReaction cmbt mv (combatantByIdMustExist tid sim)
+                  ( newTarget, logStuff ) =
+                    targetReaction nextCmbt mv (combatantByIdMustExist tid nextSim)
 
-              nextSim =
-                { sim
-                  | combatants = Array.set tid newTarget sim.combatants
-                  , combatLog = logStuff ++ sim.combatLog
-                }
-            in
-              Just (dropActiveTurn nextSim)
-          else
-            Nothing
+                  nextNextSim =
+                    { nextSim
+                      | combatants = Array.set tid newTarget nextSim.combatants
+                      , combatLog = logStuff ++ nextSim.combatLog
+                    }
+                in
+                  Just (dropActiveTurn nextNextSim)
+              else
+                Nothing
+
+            Nothing ->
+              Nothing
 
         SelfTarget mv ->
+          -- TODO: Ignoring because no self target move that costs AP
           if Combatant.moveAvailable mv cmbt then
             let
               ( newUser, logStuff ) =

@@ -1,0 +1,143 @@
+@mixin pad-left-right($amount) {
+    padding-left: $amount;
+    padding-right: $amount;
+}
+@mixin simple-border {
+    border: 1px solid #AAAAAA;
+    border-radius: 4px;
+}
+@mixin complete-border {
+    @include simple-border;
+    @include pad-left-right(5px);
+    margin: 1px;
+}
+@mixin small-label-font($size) {
+    font-size: $size;
+    font-variant: small-caps;
+    color: gray;
+}
+.combatant {
+    width: 50%;
+    @include simple-border;
+    padding: 1px;
+    margin: 1px;
+}
+.combatant-alive {}
+.combatant-dead {
+    background-color: #909090;
+    opacity: 0.25;
+}
+.combatant-status-bar {
+    display: flex;
+    flex-wrap: nowrap;
+}
+.combatant-name {
+    flex-grow: 1;
+}
+.combatant-class {
+    color: #AAAAAA;
+    font-size: 10;
+    font-variant: small-caps;
+    flex-grow: 3;
+    text-align: right;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+}
+.combatant-ap,
+.combatant-ct,
+.combatant-hp {
+    flex-grow: 1;
+    @include complete-border;
+}
+.combatant-ap-label {
+    @include small-label-font(8);
+    padding-right: 0.3em;
+}
+.combatant-ap-filled {}
+.combatant-ap-empty {
+    color: lightgray;
+}
+.combatant-hp-label {
+    @include small-label-font(8);
+    padding-right: 0.3em;
+}
+.combatant-ct-label {
+    @include small-label-font(8);
+    padding-right: 0.3em;
+}
+.combatant-move-list {
+    flex-direction: column;
+    display: flex;
+    @include simple-border;
+    padding: 1px;
+}
+.combatant-move {
+    flex-grow: 1;
+}
+.combatant-move-unusable {
+    opacity: 0.5;
+}
+.combatant-target-list {
+    flex-direction: column;
+    display: flex;
+    @include simple-border;
+    padding: 1px;
+}
+.combatant-target-party {
+    flex-direction: row;
+    flex-wrap: wrap;
+    display: flex;
+    flex-grow: 1;
+}
+.combatant-target {
+    flex-grow: 1;
+    width: 33%;
+}
+.combatant-target-dead {
+    opacity: 0.25;
+}
+.party {
+    min-height: 6em;
+    display: flex;
+    flex-direction: row;
+}
+.user-party {}
+.ai-party {}
+.combat-log-line {
+    text-align: center;
+}
+.combat-log {
+    display: flex;
+    flex-direction: column;
+    min-height: 8em;
+    @include simple-border;
+    padding: 1px;
+    margin: 1px;
+}
+.main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 4;
+}
+.ct-bar-unit {
+    @include simple-border;
+    padding: 1px;
+    margin: 1px;
+}
+.ct-bar-unit-num {
+    color: gray;
+    font-size: 10;
+    @include pad-left-right(0.2em);
+}
+.ct-bar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    @include simple-border;
+    padding: 1px;
+    margin: 1px;
+}
+.game {
+    display: flex;
+    flex-direction: row;
+}

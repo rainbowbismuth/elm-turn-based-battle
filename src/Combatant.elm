@@ -136,6 +136,14 @@ increaseAP cmbt =
   { cmbt | actionPoints = min (cmbt.actionPoints + 1) 5 }
 
 
+payAP : Int -> Combatant -> Maybe Combatant
+payAP amount cmbt =
+  if cmbt.actionPoints >= amount then
+    Just { cmbt | actionPoints = cmbt.actionPoints - amount }
+  else
+    Nothing
+
+
 payTurnCT cmbt =
   { cmbt | chargeTime = cmbt.chargeTime - 100 }
 

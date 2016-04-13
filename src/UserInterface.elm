@@ -219,10 +219,14 @@ viewMoves addr cmbt =
 viewMove : Address Action -> Combatant -> Move -> Html
 viewMove addr unit mv =
   button
-    [ class "combatant-mov"
-    , onClick addr (SelectMove mv)
-    ]
-    [ text (toString mv) ]
+    (if unit.actionPoints >= Move.cost mv then
+      [ class "combatant-move"
+      , onClick addr (SelectMove mv)
+      ]
+     else
+      [ class "combatant-move combatant-move-unusable" ]
+    )
+    [ text (toString mv ++ " " ++ String.repeat (Move.cost mv) "•") ]
 
 
 viewTargets : Address Action -> Player -> Model -> Html
