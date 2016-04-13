@@ -1,5 +1,4 @@
 elm-stuff
 web/assets/js
-.sass-cache
-*.map
-*.css
+web/assets/css
+web/assets/.sass-cache
