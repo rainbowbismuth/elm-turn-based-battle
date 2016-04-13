@@ -38,6 +38,9 @@
     box-shadow: $f;
 }
 .tooltip-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
     position: relative;
 }
 $tooltip-color: #1496bb;
@@ -52,11 +55,9 @@ $tooltip-color: #1496bb;
     margin-bottom: 15px;
     opacity: 0;
     padding: 10px;
+    left: -10px;
     pointer-events: none;
     position: absolute;
-    //left: -50%;
-    //left: 25%;
-    //right: 25%;
     text-align: center;
     @include xform(translateY(10px));
     @include xtransition(all .25s ease-out);
@@ -79,13 +80,12 @@ $tooltip-color: #1496bb;
     content: " ";
     height: 0;
     left: 50%;
-    margin-left: -13px;
+    margin-left: -10px;
     position: absolute;
     width: 0;
 }
 .tooltip-container:hover .tooltip {
     opacity: 1;
-    pointer-events: auto;
     @include xform(translateY(0px));
 }
 .combatant {
