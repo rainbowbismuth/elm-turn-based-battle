@@ -7,7 +7,7 @@
     border-radius: 4px;
 }
 @mixin complete-border {
-    @include simple-border;
+     @include simple-border;
     @include pad-left-right(5px);
     margin: 1px;
 }
@@ -15,6 +15,78 @@
     font-size: $size;
     font-variant: small-caps;
     color: gray;
+}
+@mixin xform($f) {
+    -webkit-transform: $f;
+    -moz-transform: $f;
+    -ms-transform: $f;
+    -o-transform: $f;
+    transform: $f;
+}
+@mixin xtransition($f) {
+    -webkit-transition: $f;
+    -moz-transition: $f;
+    -ms-transition: $f;
+    -o-transition: $f;
+    transition: $f;
+}
+@mixin xbox-shadow($f) {
+    -webkit-box-shadow: $f;
+    -moz-box-shadow: $f;
+    -ms-box-shadow: $f;
+    -o-box-shadow: $f;
+    box-shadow: $f;
+}
+.tooltip-container {
+    position: relative;
+}
+$tooltip-color: #1496bb;
+.tooltip-container .tooltip {
+    width: 100%;
+    font-size: 12;
+    font-variant: normal;
+    background: $tooltip-color;
+    bottom: 100%;
+    color: #ffffff;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0;
+    padding: 10px;
+    pointer-events: none;
+    position: absolute;
+    //left: -50%;
+    //left: 25%;
+    //right: 25%;
+    text-align: center;
+    @include xform(translateY(10px));
+    @include xtransition(all .25s ease-out);
+    @include xbox-shadow(2px 2px 6px rgba(0, 0, 0, 0.28));
+}
+.tooltip-container .tooltip:before {
+    bottom: -20px;
+    content: " ";
+    display: block;
+    height: 20px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+.tooltip-container .tooltip:after {
+    border-left: solid transparent 10px;
+    border-right: solid transparent 10px;
+    border-top: solid $tooltip-color 10px;
+    bottom: -10px;
+    content: " ";
+    height: 0;
+    left: 50%;
+    margin-left: -13px;
+    position: absolute;
+    width: 0;
+}
+.tooltip-container:hover .tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    @include xform(translateY(0px));
 }
 .combatant {
     width: 50%;
@@ -140,4 +212,5 @@
 .game {
     display: flex;
     flex-direction: row;
+    margin-top: 10%;
 }

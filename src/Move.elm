@@ -37,3 +37,16 @@ cost mv =
 
     Defend ->
       0
+
+
+tooltip : Move -> String
+tooltip mv =
+  case mv of
+    Attack ->
+      "Attack a target, costs 1 AP"
+
+    Heal ->
+      "Heal a target for 45 HP, costs 2 AP"
+
+    Defend ->
+      "Take half damage until your next turn, and gain 1 AP"
