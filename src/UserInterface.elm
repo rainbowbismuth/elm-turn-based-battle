@@ -46,6 +46,7 @@ type alias Model =
 type Action
   = SelectMove Move
   | SelectTarget Id
+  | CancelSelection
 
 
 update : Action -> Model -> Model
@@ -76,6 +77,9 @@ update action model =
 
         Nothing ->
           Debug.crash "this should not be possible"
+
+    CancelSelection ->
+      { model | mov = Nothing }
 
 
 aiIfNecessary : Simulation -> Simulation
@@ -247,6 +251,11 @@ viewTargets addr player model =
           |> Array.map (viewTarget addr)
           |> Array.toList
         )
+    , button
+        [ class "combatant-target-cancel"
+        , onClick addr CancelSelection
+        ]
+        [ text "Cancel" ]
     ]
 
 
