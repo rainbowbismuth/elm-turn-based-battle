@@ -24,10 +24,13 @@ import Player exposing (Player(..))
 import Class exposing (Class(..))
 import Combatant exposing (Combatant)
 import Simulation exposing (Simulation)
+import Signal exposing (Signal)
+import Html exposing (Html)
 import UserInterface
 import Array
 
 
+main : Signal Html
 main =
   StartApp.start { model = initialModel, view = UserInterface.view, update = UserInterface.update }
 

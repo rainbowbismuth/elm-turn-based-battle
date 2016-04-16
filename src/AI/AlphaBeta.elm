@@ -101,6 +101,7 @@ alphabeta sim depth a b =
         alphabeta (Simulation.clockTick sim) depth a b
 
 
+alphabetaMaximizing : List Command -> Simulation -> Int -> Float -> Float -> Float -> Float
 alphabetaMaximizing moves sim depth a b v =
   case moves of
     m :: ms ->
@@ -125,6 +126,7 @@ alphabetaMaximizing moves sim depth a b v =
       v
 
 
+alphabetaMinimizing : List Command -> Simulation -> Int -> Float -> Float -> Float -> Float
 alphabetaMinimizing moves sim depth a b v =
   case moves of
     m :: ms ->

@@ -28,6 +28,7 @@ type Class
   | Cleric
 
 
+strength : Class -> Float
 strength class =
   case class of
     Warrior ->
@@ -40,6 +41,7 @@ strength class =
       0.8
 
 
+speed : Class -> Int
 speed class =
   case class of
     Warrior ->
@@ -52,6 +54,7 @@ speed class =
       7
 
 
+defense : Class -> Float
 defense class =
   case class of
     Warrior ->
@@ -64,18 +67,22 @@ defense class =
       1.2
 
 
+warriorMoveList : List Move
 warriorMoveList =
   [ Attack, Defend ]
 
 
+thiefMoveList : List Move
 thiefMoveList =
   [ Attack, Defend ]
 
 
+clericMoveList : List Move
 clericMoveList =
   [ Attack, Defend, Heal ]
 
 
+moveList : Class -> List Move
 moveList class =
   case class of
     Warrior ->

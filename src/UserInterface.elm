@@ -285,6 +285,7 @@ viewTargets addr player model =
     ]
 
 
+viewTarget : Address Action -> Combatant -> Html
 viewTarget addr cmbt =
   let
     attributes =

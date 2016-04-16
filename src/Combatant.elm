@@ -21,8 +21,7 @@ module Combatant (..) where
 
 import Id exposing (Id)
 import Player exposing (Player(..))
-import Command exposing (CommandType(..))
-import Move exposing (Move(..))
+import Move exposing (Move)
 import Class exposing (Class(..))
 
 
@@ -68,14 +67,17 @@ mkCombatant cls =
         { default | class = cls, hitPoints = 80 }
 
 
+strength : Combatant -> Float
 strength cmbt =
   Class.strength cmbt.class
 
 
+defense : Combatant -> Float
 defense cmbt =
   Class.defense cmbt.class * defenseBonus cmbt
 
 
+defenseBonus : Combatant -> Float
 defenseBonus cmbt =
   case cmbt.state of
     Defending ->
@@ -85,46 +87,57 @@ defenseBonus cmbt =
       1
 
 
+speed : Combatant -> Int
 speed cmbt =
   Class.speed cmbt.class
 
 
+moveList : Combatant -> List Move
 moveList cmbt =
   Class.moveList cmbt.class
 
 
+moveAvailable : Move -> Combatant -> Bool
 moveAvailable move cmbt =
   List.member move (moveList cmbt)
 
 
+alive : Combatant -> Bool
 alive cmbt =
   cmbt.hitPoints > 0
 
 
+dead : Combatant -> Bool
 dead cmbt =
   not (alive cmbt)
 
 
+friendsOf : Player -> Combatant -> Bool
 friendsOf player cmbt =
   cmbt.player == player
 
 
+foesOf : Player -> Combatant -> Bool
 foesOf player cmbt =
   cmbt.player /= player
 
 
+friends : Combatant -> Combatant -> Bool
 friends cmbtA cmbtB =
   cmbtA.player == cmbtB.player
 
 
+foes : Combatant -> Combatant -> Bool
 foes cmbtA cmbtB =
   cmbtA.player /= cmbtB.player
 
 
+canHaveActiveTurn : Combatant -> Bool
 canHaveActiveTurn cmbt =
   alive cmbt && cmbt.chargeTime >= 100
 
 
+clockTick : Combatant -> Combatant
 clockTick cmbt =
   if alive cmbt then
     { cmbt | chargeTime = cmbt.chargeTime + speed cmbt }
@@ -132,6 +145,7 @@ clockTick cmbt =
     cmbt
 
 
+increaseAP : Combatant -> Combatant
 increaseAP cmbt =
   { cmbt | actionPoints = min (cmbt.actionPoints + 1) 5 }
 
@@ -144,13 +158,16 @@ payAP amount cmbt =
     Nothing
 
 
+payTurnCT : Combatant -> Combatant
 payTurnCT cmbt =
   { cmbt | chargeTime = cmbt.chargeTime - 100 }
 
 
+toDefaultState : Combatant -> Combatant
 toDefaultState cmbt =
   { cmbt | state = Default }
 
 
+toDefendState : Combatant -> Combatant
 toDefendState cmbt =
   { cmbt | state = Defending }
