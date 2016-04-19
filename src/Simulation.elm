@@ -171,18 +171,18 @@ clockTick sim =
 turnOrderList : Simulation -> List Combatant
 turnOrderList initialSim =
   let
-    recur i sim =
+    recur i sim acc =
       if i > 0 then
         case activeCmbt sim of
           Just cmbt ->
-            cmbt :: recur (i - 1) (clockTickUntilTurn (dropActiveTurn sim))
+            recur (i - 1) (clockTickUntilTurn (dropActiveTurn sim)) (cmbt :: acc)
 
           Nothing ->
-            recur (i - 1) (clockTickUntilTurn sim)
+            recur (i - 1) (clockTickUntilTurn sim) acc
       else
-        []
+        acc
   in
-    recur 12 initialSim
+    List.reverse <| recur 12 initialSim []
 
 
 combatantById : Id -> Simulation -> Maybe Combatant
