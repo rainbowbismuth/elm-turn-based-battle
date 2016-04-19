@@ -170,7 +170,6 @@ playAI sim =
       availableMoves sim
         |> List.filterMap explore
         |> List.sortBy (\( c, s, f ) -> -f)
-        |> Debug.log "AI move list"
         |> List.head
   in
     case head of
